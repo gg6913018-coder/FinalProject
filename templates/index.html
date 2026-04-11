@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Neural Style Transfer Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Neural Style Transfer Studio</h1>
+        <p>Upload your images and tune the parameters to generate AI art.</p>
+        
+        <form id="nst-form">
+            <div class="upload-group">
+                <div>
+                    <label>Content Image:</label>
+                    <input type="file" name="content_img" accept="image/*" required>
+                </div>
+                <div>
+                    <label>Style Image(s) - <i>You can select multiple!</i>:</label>
+                    <input type="file" name="style_imgs" accept="image/*" multiple required>
+                </div>
+            </div>
+
+            <div class="sliders">
+                <label>Iterations: <span id="val_iters">200</span></label>
+                <input type="range" name="iterations" min="50" max="500" step="50" value="200" oninput="val_iters.innerText=this.value">
+                
+                <label>Style Weight (Log scale 1e-X):</label>
+                <input type="number" name="style_weight" value="0.01" step="0.01">
+                
+                <label>Start Mode:</label>
+                <select name="start_from">
+                    <option value="content">Content (Fastest)</option>
+                    <option value="mix">Mix (Balanced)</option>
+                    <option value="noise">Noise (Creative)</option>
+                </select>
+            </div>
+            
+            <button type="submit" id="submit-btn">Generate Art</button>
+        </form>
+        
+        <div id="loading" class="hidden">
+            <p>⚙️ Processing... This may take a minute depending on iterations.</p>
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('nst-form').onsubmit = async (e) => {
+            e.preventDefault();
+            document.getElementById('submit-btn').disabled = true;
+            document.getElementById('loading').classList.remove('hidden');
+            
+            const formData = new FormData(e.target);
+            const response = await fetch('/generate', { method: 'POST', body: formData });
+            const data = await response.json();
+            
+            if(data.status === 'success') {
+                window.location.href = `/result?img=${data.output_image}&time=${data.time}`;
+            } else {
+                alert("Error: " + data.error);
+                document.getElementById('submit-btn').disabled = false;
+                document.getElementById('loading').classList.add('hidden');
+            }
+        };
+    </script>
+</body>
+</html>

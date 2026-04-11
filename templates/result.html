@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Masterpiece</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container text-center">
+        <h1>✨ Your Masterpiece is Ready!</h1>
+        <p>Generation took <strong>{{ time }}</strong> seconds.</p>
+        
+        <div class="result-display">
+            <img src="{{ url_for('serve_output', filename=img) }}" alt="Stylized Image" class="final-image">
+        </div>
+        
+        <div class="actions">
+            <a href="{{ url_for('serve_output', filename=img) }}" download class="btn">⬇️ Download Image</a>
+            <a href="/" class="btn btn-secondary">🔄 Create Another</a>
+        </div>
+    </div>
+</body>
+</html>

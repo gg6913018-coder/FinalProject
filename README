@@ -1,0 +1,21 @@
+# Neural Style Transfer Web Application
+
+This project transforms a standard Deep Learning Google Colab script into a fully functional, production-ready web application using Flask, TensorFlow, and Python.
+
+## Features
+- **MVC Architecture**: Clean separation between model logic, web routing, and UI.
+- **Multi-Style Transfer**: Select multiple style images to blend their Gram Matrices!
+- **Error Handling & Logging**: Fully tracked execution processes.
+- **Modern UI**: Dark-themed, responsive interface using AJAX to prevent page timeouts during long GPU/CPU processing.
+
+## Installation
+1. Clone the repository and navigate to the project directory.
+2. Create a virtual environment: `python -m venv venv`
+3. Activate it: `source venv/bin/activate` (Mac/Linux) or `venv\Scripts\activate` (Windows).
+4. Install requirements: `pip install -r requirements.txt`
+
+## Running the App
+Execute `python app.py`. Open your browser and navigate to `http://127.0.0.1:5000/`.
+
+## Running Tests
+Run `pytest tests/` to ensure mathematical functions (like Gram Matrix) evaluate correctly.
