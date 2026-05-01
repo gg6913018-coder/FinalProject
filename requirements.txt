@@ -4,4 +4,4 @@ Pillow
 numpy
 pytest
 Werkzeug
-matplotlibx
+matplotlib
