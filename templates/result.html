@@ -2,21 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Your Masterpiece</title>
+    <title>Your StyleFusion Result</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container text-center">
-        <h1>✨ Your Masterpiece is Ready!</h1>
+        <h1>✨ Your StyleFusion Result is Ready!</h1>
+
         <p>Generation took <strong>{{ time }}</strong> seconds.</p>
-        
+
         <div class="result-display">
-            <img src="{{ url_for('serve_output', filename=img) }}" alt="Stylized Image" class="final-image">
+            <h2>Generated Image</h2>
+            <img
+                src="{{ url_for('serve_output', filename=img) }}"
+                alt="Stylized Image"
+                class="final-image"
+            >
         </div>
-        
+
+        {% if loss_plot %}
+        <div class="result-display">
+            <h2>Loss Graph</h2>
+            <img
+                src="{{ url_for('serve_output', filename=loss_plot) }}"
+                alt="Loss Graph"
+                class="final-image"
+            >
+        </div>
+        {% endif %}
+
         <div class="actions">
-            <a href="{{ url_for('serve_output', filename=img) }}" download class="btn">⬇️ Download Image</a>
-            <a href="/" class="btn btn-secondary">🔄 Create Another</a>
+            <a
+                href="{{ url_for('serve_output', filename=img) }}"
+                download
+                class="btn"
+            >
+                ⬇️ Download Image
+            </a>
+
+            {% if loss_csv %}
+            <a
+                href="{{ url_for('serve_output', filename=loss_csv) }}"
+                download
+                class="btn btn-secondary"
+            >
+                ⬇️ Download Loss CSV
+            </a>
+            {% endif %}
+
+            {% if loss_plot %}
+            <a
+                href="{{ url_for('serve_output', filename=loss_plot) }}"
+                download
+                class="btn btn-secondary"
+            >
+                ⬇️ Download Loss Graph
+            </a>
+            {% endif %}
+
+            <a href="/" class="btn btn-secondary">
+                🔄 Create Another
+            </a>
         </div>
     </div>
 </body>

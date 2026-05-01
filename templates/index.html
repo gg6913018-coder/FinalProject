@@ -2,46 +2,95 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Neural Style Transfer Studio</title>
+    <title>StyleFusion - Neural Style Transfer Studio</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>🎨 Neural Style Transfer Studio</h1>
-        <p>Upload your images and tune the parameters to generate AI art.</p>
-        
+        <h1>🎨 StyleFusion</h1>
+        <p>Upload a content image and one or more style images to generate AI artwork.</p>
+
         <form id="nst-form">
             <div class="upload-group">
                 <div>
                     <label>Content Image:</label>
                     <input type="file" name="content_img" accept="image/*" required>
                 </div>
+
                 <div>
-                    <label>Style Image(s) - <i>You can select multiple!</i>:</label>
+                    <label>Style Image(s):</label>
                     <input type="file" name="style_imgs" accept="image/*" multiple required>
+                    <small>You can select more than one style image.</small>
                 </div>
             </div>
 
             <div class="sliders">
-                <label>Iterations: <span id="val_iters">200</span></label>
-                <input type="range" name="iterations" min="50" max="500" step="50" value="200" oninput="val_iters.innerText=this.value">
-                
-                <label>Style Weight (Log scale 1e-X):</label>
-                <input type="number" name="style_weight" value="0.01" step="0.01">
-                
+                <label>Iterations: <span id="val_iters">{{ defaults.iterations }}</span></label>
+                <input
+                    type="range"
+                    name="iterations"
+                    min="100"
+                    max="1200"
+                    step="100"
+                    value="{{ defaults.iterations }}"
+                    oninput="val_iters.innerText=this.value"
+                >
+
+                <label>Style Weight:</label>
+                <input
+                    type="number"
+                    name="style_weight"
+                    value="{{ defaults.style_weight }}"
+                    step="0.001"
+                >
+
+                <label>Content Weight:</label>
+                <input
+                    type="number"
+                    name="content_weight"
+                    value="{{ defaults.content_weight }}"
+                    step="100"
+                >
+
+                <label>Total Variation Weight:</label>
+                <input
+                    type="number"
+                    name="tv_weight"
+                    value="{{ defaults.tv_weight }}"
+                    step="1"
+                >
+
+                <label>Learning Rate:</label>
+                <input
+                    type="number"
+                    name="lr"
+                    value="{{ defaults.lr }}"
+                    step="0.001"
+                >
+
+                <label>Max Image Dimension:</label>
+                <input
+                    type="number"
+                    name="max_dim"
+                    value="{{ defaults.max_dim }}"
+                    min="128"
+                    max="1024"
+                    step="64"
+                >
+
                 <label>Start Mode:</label>
                 <select name="start_from">
-                    <option value="content">Content (Fastest)</option>
-                    <option value="mix">Mix (Balanced)</option>
-                    <option value="noise">Noise (Creative)</option>
+                    <option value="content" selected>Content - stable and clean</option>
+                    <option value="mix">Mix - balanced</option>
+                    <option value="noise">Noise - creative but less stable</option>
                 </select>
             </div>
-            
+
             <button type="submit" id="submit-btn">Generate Art</button>
         </form>
-        
+
         <div id="loading" class="hidden">
-            <p>⚙️ Processing... This may take a minute depending on iterations.</p>
+            <p>⚙️ Processing... This may take a few minutes depending on the settings.</p>
             <div class="loader"></div>
         </div>
     </div>
@@ -49,19 +98,41 @@
     <script>
         document.getElementById('nst-form').onsubmit = async (e) => {
             e.preventDefault();
-            document.getElementById('submit-btn').disabled = true;
-            document.getElementById('loading').classList.remove('hidden');
-            
-            const formData = new FormData(e.target);
-            const response = await fetch('/generate', { method: 'POST', body: formData });
-            const data = await response.json();
-            
-            if(data.status === 'success') {
-                window.location.href = `/result?img=${data.output_image}&time=${data.time}`;
-            } else {
-                alert("Error: " + data.error);
-                document.getElementById('submit-btn').disabled = false;
-                document.getElementById('loading').classList.add('hidden');
+
+            const submitButton = document.getElementById('submit-btn');
+            const loading = document.getElementById('loading');
+
+            submitButton.disabled = true;
+            loading.classList.remove('hidden');
+
+            try {
+                const formData = new FormData(e.target);
+
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    const params = new URLSearchParams({
+                        img: data.output_image,
+                        time: data.time,
+                        loss_csv: data.loss_csv || '',
+                        loss_plot: data.loss_plot || ''
+                    });
+
+                    window.location.href = `/result?${params.toString()}`;
+                } else {
+                    alert("Error: " + data.error);
+                    submitButton.disabled = false;
+                    loading.classList.add('hidden');
+                }
+            } catch (error) {
+                alert("Unexpected error: " + error);
+                submitButton.disabled = false;
+                loading.classList.add('hidden');
             }
         };
     </script>
