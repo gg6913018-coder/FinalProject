@@ -12,11 +12,11 @@ def gram_matrix(input_tensor: tf.Tensor) -> tf.Tensor:
     Output shape:
         [batch, channels, channels]
     """
-    result = tf.linalg.einsum(
-        "bijc,bijd->bcd",
+    result = tf.linalg.einsum( 
+        "bijc,bijd->bcd", 
         input_tensor,
         input_tensor
-    )
+    ) # Computes the inner product of the feature maps across spatial dimensions
 
     input_shape = tf.shape(input_tensor)
     num_locations = tf.cast(input_shape[1] * input_shape[2], tf.float32)
@@ -71,11 +71,11 @@ def content_loss(
     """
     loss = tf.zeros(shape=(), dtype=tf.float32)
 
-    weight_per_layer = 1.0 / float(len(content_outputs))
+    weight_per_layer = 1.0 / float(len(content_outputs)) # Equal weight for each content layer
 
     for target, output in zip(content_targets, content_outputs):
-        loss += weight_per_layer * tf.reduce_mean(
-            tf.square(output - target)
+        loss += weight_per_layer * tf.reduce_mean( 
+            tf.square(output - target) # Mean squared error between content features
         )
 
     return loss
@@ -85,4 +85,4 @@ def total_variation_loss(image: tf.Tensor) -> tf.Tensor:
     """
     Calculates total variation loss to reduce high-frequency noise.
     """
-    return tf.reduce_mean(tf.image.total_variation(image))
+    return tf.reduce_mean(tf.image.total_variation(image)) 

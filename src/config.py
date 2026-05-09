@@ -25,9 +25,9 @@ DEFAULT_ITERATIONS: int = 600
 
 # Balanced defaults after experiments.
 # You can still override these values from the UI.
-DEFAULT_STYLE_WEIGHT: float = 0.08
-DEFAULT_CONTENT_WEIGHT: float = 4500.0
-DEFAULT_TV_WEIGHT: float = 120.0
+DEFAULT_STYLE_WEIGHT: float = 0.02
+DEFAULT_CONTENT_WEIGHT: float = 8000.0
+DEFAULT_TV_WEIGHT: float = 250.0
 DEFAULT_LR: float = 0.004
 
 # Save intermediate images every N iterations.
@@ -52,22 +52,16 @@ STYLE_LAYERS: List[str] = [
     "block2_conv2",
     "block3_conv2",
     "block4_conv2",
-    "block5_conv2",
+    "block5_conv2", 
 ]
 
 # Lower layers capture small textures and colors.
 # Higher layers capture larger visual patterns.
 # Giving lower weight to early layers helps reduce noisy tiny textures.
-STYLE_LAYER_WEIGHTS: List[float] = [
-    0.05,
-    0.15,
-    0.25,
-    0.30,
-    0.25,
-]
+STYLE_LAYER_WEIGHTS: List[float] = [0.01, 0.05, 0.20, 0.40, 0.34] #Sum to 1.0 for balanced contribution.
 
 CONTENT_LAYERS: List[str] = [
-    "block5_conv1"
+    "block5_conv1" # Changed from block4_conv2 to block5_conv1,depends on the desired content representation
 ]
 
 # Replacing MaxPooling with AveragePooling often produces smoother
